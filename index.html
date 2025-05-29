@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楓之谷Artale價值換算器</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Microsoft JhengHei', sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        .card-header {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 30px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .result-card {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+            color: white;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .currency-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        .rate-display {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-4">
+                    <h1 class="text-white mb-3">
+                        <i class="fas fa-coins currency-icon"></i>
+                        楓之谷Artale價值換算器
+                    </h1>
+                    <p class="text-white-50">輕鬆換算WC幣、楓幣與台幣之間的價值</p>
+                </div>
+
+                <!-- 匯率設定區 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-cog me-2"></i>
+                            匯率設定
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">WC幣對台幣匯率</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="wcToNt" value="400" step="0.01">
+                                    <span class="input-group-text">WC = </span>
+                                    <input type="number" class="form-control" id="ntAmount" value="60" step="0.01">
+                                    <span class="input-group-text">NT</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">WC幣對楓幣匯率</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">1 WC = </span>
+                                    <input type="number" class="form-control" id="wcToMeso" value="55000" step="1">
+                                    <span class="input-group-text">楓幣</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-primary" onclick="updateRates()">
+                                <i class="fas fa-sync-alt me-2"></i>
+                                更新匯率
+                            </button>
+                        </div>
+                        
+                        <!-- 當前匯率顯示 -->
+                        <div class="row mt-3" id="currentRates">
+                            <div class="col-md-4">
+                                <div class="rate-display text-center">
+                                    <small>1 WC = <span id="displayWcToNt">0.15</span> NT</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="rate-display text-center">
+                                    <small>1 WC = <span id="displayWcToMeso">55,000</span> 楓幣</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="rate-display text-center">
+                                    <small>1 楓幣 = <span id="displayMesoToNt">0.0000027</span> NT</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 換算區 -->
+                <div class="row">
+                    <!-- WC換算 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-dollar-sign me-2"></i>
+                                    WC幣換算
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">輸入WC數量</label>
+                                    <input type="number" class="form-control" id="wcInput" placeholder="請輸入WC數量" step="0.01">
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="calculateFromWc()">
+                                    <i class="fas fa-calculator me-2"></i>
+                                    計算
+                                </button>
+                                <div id="wcResult" class="result-card p-3" style="display: none;">
+                                    <h6><i class="fas fa-coins me-2"></i>換算結果</h6>
+                                    <div>楓幣：<span id="wcToMesoResult">0</span></div>
+                                    <div>台幣：<span id="wcToNtResult">0</span> NT</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 楓幣換算 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-leaf me-2"></i>
+                                    楓幣換算
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">輸入楓幣數量</label>
+                                    <input type="number" class="form-control" id="mesoInput" placeholder="請輸入楓幣數量" step="1">
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="calculateFromMeso()">
+                                    <i class="fas fa-calculator me-2"></i>
+                                    計算
+                                </button>
+                                <div id="mesoResult" class="result-card p-3" style="display: none;">
+                                    <h6><i class="fas fa-coins me-2"></i>換算結果</h6>
+                                    <div>WC幣：<span id="mesoToWcResult">0</span></div>
+                                    <div>台幣：<span id="mesoToNtResult">0</span> NT</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 台幣換算 -->
+                <div class="row">
+                    <div class="col-md-6 mx-auto mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-money-bill me-2"></i>
+                                    台幣換算
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">輸入台幣金額</label>
+                                    <input type="number" class="form-control" id="ntInput" placeholder="請輸入台幣金額" step="0.01">
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="calculateFromNt()">
+                                    <i class="fas fa-calculator me-2"></i>
+                                    計算
+                                </button>
+                                <div id="ntResult" class="result-card p-3" style="display: none;">
+                                    <h6><i class="fas fa-coins me-2"></i>換算結果</h6>
+                                    <div>WC幣：<span id="ntToWcResult">0</span></div>
+                                    <div>楓幣：<span id="ntToMesoResult">0</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 全域變數儲存匯率
+        let rates = {
+            wcToNt: 0.15,      // 1 WC = 0.15 NT (400 WC = 60 NT)
+            wcToMeso: 55000,   // 1 WC = 55000 楓幣
+            mesoToNt: 0        // 1 楓幣 = ? NT (計算得出)
+        };
+
+        // 初始化匯率
+        function updateRates() {
+            const wcAmount = parseFloat(document.getElementById('wcToNt').value) || 400;
+            const ntAmount = parseFloat(document.getElementById('ntAmount').value) || 60;
+            const mesoAmount = parseFloat(document.getElementById('wcToMeso').value) || 55000;
+
+            rates.wcToNt = ntAmount / wcAmount;
+            rates.wcToMeso = mesoAmount;
+            rates.mesoToNt = rates.wcToNt / rates.wcToMeso;
+
+            // 更新顯示
+            document.getElementById('displayWcToNt').textContent = rates.wcToNt.toFixed(4);
+            document.getElementById('displayWcToMeso').textContent = rates.wcToMeso.toLocaleString();
+            document.getElementById('displayMesoToNt').textContent = rates.mesoToNt.toFixed(8);
+        }
+
+        // 從WC計算
+        function calculateFromWc() {
+            const wcAmount = parseFloat(document.getElementById('wcInput').value);
+            if (isNaN(wcAmount) || wcAmount <= 0) {
+                alert('請輸入有效的WC數量');
+                return;
+            }
+
+            const mesoAmount = wcAmount * rates.wcToMeso;
+            const ntAmount = wcAmount * rates.wcToNt;
+
+            document.getElementById('wcToMesoResult').textContent = mesoAmount.toLocaleString();
+            document.getElementById('wcToNtResult').textContent = ntAmount.toFixed(2);
+            document.getElementById('wcResult').style.display = 'block';
+        }
+
+        // 從楓幣計算
+        function calculateFromMeso() {
+            const mesoAmount = parseFloat(document.getElementById('mesoInput').value);
+            if (isNaN(mesoAmount) || mesoAmount <= 0) {
+                alert('請輸入有效的楓幣數量');
+                return;
+            }
+
+            const wcAmount = mesoAmount / rates.wcToMeso;
+            const ntAmount = mesoAmount * rates.mesoToNt;
+
+            document.getElementById('mesoToWcResult').textContent = wcAmount.toFixed(4);
+            document.getElementById('mesoToNtResult').textContent = ntAmount.toFixed(4);
+            document.getElementById('mesoResult').style.display = 'block';
+        }
+
+        // 從台幣計算
+        function calculateFromNt() {
+            const ntAmount = parseFloat(document.getElementById('ntInput').value);
+            if (isNaN(ntAmount) || ntAmount <= 0) {
+                alert('請輸入有效的台幣金額');
+                return;
+            }
+
+            const wcAmount = ntAmount / rates.wcToNt;
+            const mesoAmount = wcAmount * rates.wcToMeso;
+
+            document.getElementById('ntToWcResult').textContent = wcAmount.toFixed(4);
+            document.getElementById('ntToMesoResult').textContent = mesoAmount.toLocaleString();
+            document.getElementById('ntResult').style.display = 'block';
+        }
+
+        // 頁面載入時初始化匯率
+        window.onload = function() {
+            updateRates();
+        };
+
+        // 監聽Enter鍵
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'wcInput') {
+                    calculateFromWc();
+                } else if (activeElement.id === 'mesoInput') {
+                    calculateFromMeso();
+                } else if (activeElement.id === 'ntInput') {
+                    calculateFromNt();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
