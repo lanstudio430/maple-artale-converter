@@ -1,316 +1,387 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>楓之谷Artale價值換算器</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>楓之谷 Artale 換算器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to right bottom, #add8e6, #87ceeb);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #34495e;
             min-height: 100vh;
-            font-family: 'Microsoft JhengHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+        .container {
+            max-width: 900px;
+            padding: 30px 15px;
+            margin: 15px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        .header-title {
+            color: #3498db;
+            font-weight: 700;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 15px;
+            letter-spacing: 1.5px;
+            line-height: 1.5;
+        }
+        .header-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 5px;
+            background-color: #3498db;
+            border-radius: 3px;
+        }
+
         .card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            backdrop-filter: blur(10px);
-            background: rgba(255,255,255,0.95);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
         .card-header {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            color: white;
-            border-radius: 15px 15px 0 0 !important;
-            border: none;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: #ffffff;
+            font-weight: 600;
+            border-bottom: none;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            font-size: 1.15rem;
         }
-        .form-control, .form-select {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
+        .card-header i {
+            margin-right: 12px;
+            font-size: 1.3rem;
         }
-        .form-control:focus, .form-select:focus {
-            border-color: #4ecdc4;
-            box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.25);
+
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1.05rem;
         }
-        .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 10px;
-            padding: 10px 30px;
-            transition: all 0.3s ease;
+        .form-label i {
+            margin-right: 8px;
+            color: #3498db;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .form-label small {
+            font-weight: normal;
+            color: #888;
         }
-        .result-card {
-            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
-            color: white;
-            border-radius: 10px;
-            margin-top: 20px;
+
+        .input-group-text {
+            background-color: #ecf0f1;
+            color: #555;
+            border: 1px solid #bdc3c7;
+            min-width: 70px;
+            justify-content: center;
+            font-weight: 500;
+            border-radius: .375rem 0 0 .375rem;
         }
-        .currency-icon {
-            font-size: 1.5em;
-            margin-right: 10px;
+        .input-group-text:last-child {
+            border-radius: 0 .375rem .375rem 0;
         }
-        .rate-display {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 10px;
-            margin: 5px 0;
+        .input-group-text i {
+            margin-left: 5px;
+        }
+
+        .form-control {
+            border-color: #bdc3c7;
+            box-shadow: none !important;
+            padding: 0.75rem 1rem;
+            font-size: 1.1rem;
+        }
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.35) !important;
+        }
+        .form-control-lg {
+            font-size: 1.25rem;
+            padding: 0.85rem 1.2rem;
+        }
+
+        .result-group .form-control {
+            background-color: #e8f6fc;
+            font-weight: bold;
+            color: #2980b9;
+            cursor: default;
+        }
+
+        hr {
+            border-top: 3px solid #b3e5fc;
+            margin: 40px 0;
+            opacity: 0.7;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
     </style>
 </head>
 <body>
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="text-center mb-4">
-                    <h1 class="text-white mb-3">
-                        <i class="fas fa-coins currency-icon"></i>
-                        楓之谷Artale價值換算器
-                    </h1>
-                    <p class="text-white-50">輕鬆換算WC幣、楓幣與台幣之間的價值</p>
-                </div>
+<div class="container">
+    <h1 class="text-center header-title">
+        楓之谷 Artale <br> <i class="fas fa-money-bill-transfer me-2"></i>換算器
+    </h1>
 
-                <!-- 匯率設定區 -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4 class="mb-0">
-                            <i class="fas fa-cog me-2"></i>
-                            匯率設定
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">WC幣對台幣匯率</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="wcToNt" value="400" step="0.01">
-                                    <span class="input-group-text">WC = </span>
-                                    <input type="number" class="form-control" id="ntAmount" value="60" step="0.01">
-                                    <span class="input-group-text">NT</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">WC幣對楓幣匯率</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">1 WC = </span>
-                                    <input type="number" class="form-control" id="wcToMeso" value="55000" step="1">
-                                    <span class="input-group-text">楓幣</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-3">
-                            <button class="btn btn-primary" onclick="updateRates()">
-                                <i class="fas fa-sync-alt me-2"></i>
-                                更新匯率
-                            </button>
-                        </div>
-                        
-                        <!-- 當前匯率顯示 -->
-                        <div class="row mt-3" id="currentRates">
-                            <div class="col-md-4">
-                                <div class="rate-display text-center">
-                                    <small>1 WC = <span id="displayWcToNt">0.15</span> NT</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="rate-display text-center">
-                                    <small>1 WC = <span id="displayWcToMeso">55,000</span> 楓幣</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="rate-display text-center">
-                                    <small>1 楓幣 = <span id="displayMesoToNt">0.0000027</span> NT</small>
-                                </div>
-                            </div>
-                        </div>
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-sliders-h"></i> 匯率設定
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label for="wcToNtRate" class="form-label">
+                        <i class="fas fa-w"></i> WC 幣 : 台幣
+                    </label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="wcToNtWC" value="400" min="1">
+                        <span class="input-group-text">WC <i class="fas fa-arrow-right-arrow-left"></i></span>
+                        <input type="number" class="form-control" id="wcToNtNT" value="60" min="1">
+                        <span class="input-group-text">NT <i class="fas fa-dollar-sign"></i></span>
                     </div>
                 </div>
-
-                <!-- 換算區 -->
-                <div class="row">
-                    <!-- WC換算 -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-dollar-sign me-2"></i>
-                                    WC幣換算
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label">輸入WC數量</label>
-                                    <input type="number" class="form-control" id="wcInput" placeholder="請輸入WC數量" step="0.01">
-                                </div>
-                                <button class="btn btn-primary w-100" onclick="calculateFromWc()">
-                                    <i class="fas fa-calculator me-2"></i>
-                                    計算
-                                </button>
-                                <div id="wcResult" class="result-card p-3" style="display: none;">
-                                    <h6><i class="fas fa-coins me-2"></i>換算結果</h6>
-                                    <div>楓幣：<span id="wcToMesoResult">0</span></div>
-                                    <div>台幣：<span id="wcToNtResult">0</span> NT</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 楓幣換算 -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-leaf me-2"></i>
-                                    楓幣換算
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label">輸入楓幣數量</label>
-                                    <input type="number" class="form-control" id="mesoInput" placeholder="請輸入楓幣數量" step="1">
-                                </div>
-                                <button class="btn btn-primary w-100" onclick="calculateFromMeso()">
-                                    <i class="fas fa-calculator me-2"></i>
-                                    計算
-                                </button>
-                                <div id="mesoResult" class="result-card p-3" style="display: none;">
-                                    <h6><i class="fas fa-coins me-2"></i>換算結果</h6>
-                                    <div>WC幣：<span id="mesoToWcResult">0</span></div>
-                                    <div>台幣：<span id="mesoToNtResult">0</span> NT</div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-md-6">
+                    <label for="wcToSnowflakeRate" class="form-label">
+                        <i class="fas fa-snowflake"></i> WC 幣 : 雪花
+                    </label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="wcToSnowflakeWC" value="300" min="1">
+                        <span class="input-group-text">WC <i class="fas fa-arrow-right-arrow-left"></i></span>
+                        <input type="number" class="form-control" id="wcToSnowflakeSnowflake" value="11" min="1">
+                        <span class="input-group-text">雪花 <i class="fas fa-snowflake"></i></span>
                     </div>
                 </div>
-
-                <!-- 台幣換算 -->
-                <div class="row">
-                    <div class="col-md-6 mx-auto mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-money-bill me-2"></i>
-                                    台幣換算
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label">輸入台幣金額</label>
-                                    <input type="number" class="form-control" id="ntInput" placeholder="請輸入台幣金額" step="0.01">
-                                </div>
-                                <button class="btn btn-primary w-100" onclick="calculateFromNt()">
-                                    <i class="fas fa-calculator me-2"></i>
-                                    計算
-                                </button>
-                                <div id="ntResult" class="result-card p-3" style="display: none;">
-                                    <h6><i class="fas fa-coins me-2"></i>換算結果</h6>
-                                    <div>WC幣：<span id="ntToWcResult">0</span></div>
-                                    <div>楓幣：<span id="ntToMesoResult">0</span></div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-md-6">
+                    <label for="snowflakeToMapleRate" class="form-label">
+                        <i class="fab fa-canadian-maple-leaf"></i> 雪花 : 楓幣
+                    </label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="snowflakeToMapleSnowflake" value="1" min="1">
+                        <span class="input-group-text">雪花 <i class="fas fa-arrow-right-arrow-left"></i></span>
+                        <input type="number" class="form-control" id="snowflakeToMapleMaple" value="55000" min="1">
+                        <span class="input-group-text">楓幣 <i class="fab fa-canadian-maple-leaf"></i></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 全域變數儲存匯率
-        let rates = {
-            wcToNt: 0.15,      // 1 WC = 0.15 NT (400 WC = 60 NT)
-            wcToMeso: 55000,   // 1 WC = 55000 楓幣
-            mesoToNt: 0        // 1 楓幣 = ? NT (計算得出)
-        };
+    <hr>
 
-        // 初始化匯率
-        function updateRates() {
-            const wcAmount = parseFloat(document.getElementById('wcToNt').value) || 400;
-            const ntAmount = parseFloat(document.getElementById('ntAmount').value) || 60;
-            const mesoAmount = parseFloat(document.getElementById('wcToMeso').value) || 55000;
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-calculator"></i> 換算輸入
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <label for="inputWC" class="form-label">
+                    <i class="fas fa-w"></i> 輸入 WC 幣
+                </label>
+                <input type="number" class="form-control form-control-lg" id="inputWC" placeholder="請輸入 WC 幣數量" min="0">
+            </div>
+            <div class="mb-4">
+                <label for="inputMaple" class="form-label">
+                    <i class="fab fa-canadian-maple-leaf"></i> 輸入楓幣
+                </label>
+                <input type="number" class="form-control form-control-lg" id="inputMaple" placeholder="請輸入楓幣數量" min="0">
+            </div>
+            <div class="mb-4">
+                <label for="inputSnowflake" class="form-label">
+                    <i class="fas fa-snowflake"></i> 輸入雪花
+                </label>
+                <input type="number" class="form-control form-control-lg" id="inputSnowflake" placeholder="請輸入雪花數量" min="0">
+            </div>
+            <div class="mb-4">
+                <label for="inputNT" class="form-label">
+                    <i class="fas fa-dollar-sign"></i> 輸入台幣
+                </label>
+                <input type="number" class="form-control form-control-lg" id="inputNT" placeholder="請輸入台幣數量" min="0">
+            </div>
 
-            rates.wcToNt = ntAmount / wcAmount;
-            rates.wcToMeso = mesoAmount;
-            rates.mesoToNt = rates.wcToNt / rates.wcToMeso;
+            <hr>
 
-            // 更新顯示
-            document.getElementById('displayWcToNt').textContent = rates.wcToNt.toFixed(4);
-            document.getElementById('displayWcToMeso').textContent = rates.wcToMeso.toLocaleString();
-            document.getElementById('displayMesoToNt').textContent = rates.mesoToNt.toFixed(8);
+            <h2 class="mb-4 text-center header-title">
+                <i class="fa-solid fa-arrows-down-to-line me-2"></i> 換算結果
+            </h2>
+            <div class="row g-4 result-group">
+                <div class="col-md-6">
+                    <label for="outputWC" class="form-label">
+                        <i class="fas fa-w"></i> WC 幣
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="outputWC" readonly>
+                        <span class="input-group-text">WC</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="outputMaple" class="form-label">
+                        <i class="fab fa-canadian-maple-leaf"></i> 楓幣
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="outputMaple" readonly>
+                        <span class="input-group-text">楓幣</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="outputSnowflake" class="form-label">
+                        <i class="fas fa-snowflake"></i> 雪花
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="outputSnowflake" readonly>
+                        <span class="input-group-text">雪花</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="outputNT" class="form-label">
+                        <i class="fas fa-dollar-sign"></i> 台幣
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="outputNT" readonly>
+                        <span class="input-group-text">NT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const wcToNtWCInput = document.getElementById('wcToNtWC');
+    const wcToNtNTInput = document.getElementById('wcToNtNT');
+    const wcToSnowflakeWCInput = document.getElementById('wcToSnowflakeWC');
+    const wcToSnowflakeSnowflakeInput = document.getElementById('wcToSnowflakeSnowflake');
+    const snowflakeToMapleSnowflakeInput = document.getElementById('snowflakeToMapleSnowflake');
+    const snowflakeToMapleMapleInput = document.getElementById('snowflakeToMapleMaple');
+
+    const inputWC = document.getElementById('inputWC');
+    const inputMaple = document.getElementById('inputMaple');
+    const inputSnowflake = document.getElementById('inputSnowflake');
+    const inputNT = document.getElementById('inputNT');
+
+    const outputWC = document.getElementById('outputWC');
+    const outputMaple = document.getElementById('outputMaple');
+    const outputSnowflake = document.getElementById('outputSnowflake');
+    const outputNT = document.getElementById('outputNT');
+
+    function updateConversion() {
+        const wcToNtRateWC = parseFloat(wcToNtWCInput.value) || 1;
+        const wcToNtRateNT = parseFloat(wcToNtNTInput.value) || 1;
+
+        const wcToSnowflakeRateWC = parseFloat(wcToSnowflakeWCInput.value) || 1;
+        const wcToSnowflakeRateSnowflake = parseFloat(wcToSnowflakeSnowflakeInput.value) || 1;
+
+        const snowflakeToMapleRateSnowflake = parseFloat(snowflakeToMapleSnowflakeInput.value) || 1;
+        const snowflakeToMapleRateMaple = parseFloat(snowflakeToMapleMapleInput.value) || 1;
+
+        let wcValue = 0;
+        let mapleValue = 0;
+        let snowflakeValue = 0;
+        let ntValue = 0;
+
+        if (inputWC.value !== '') {
+            wcValue = parseFloat(inputWC.value);
+            snowflakeValue = (wcValue / wcToSnowflakeRateWC) * wcToSnowflakeRateSnowflake;
+            mapleValue = (snowflakeValue / snowflakeToMapleRateSnowflake) * snowflakeToMapleRateMaple;
+            ntValue = (wcValue / wcToNtRateWC) * wcToNtRateNT;
+        } else if (inputMaple.value !== '') {
+            mapleValue = parseFloat(inputMaple.value);
+            snowflakeValue = (mapleValue / snowflakeToMapleRateMaple) * snowflakeToMapleRateSnowflake;
+            wcValue = (snowflakeValue / wcToSnowflakeRateSnowflake) * wcToSnowflakeRateWC;
+            ntValue = (wcValue / wcToNtRateWC) * wcToNtRateNT;
+        } else if (inputSnowflake.value !== '') {
+            snowflakeValue = parseFloat(inputSnowflake.value);
+            wcValue = (snowflakeValue / wcToSnowflakeRateSnowflake) * wcToSnowflakeRateWC;
+            mapleValue = (snowflakeValue / snowflakeToMapleRateSnowflake) * snowflakeToMapleRateMaple;
+            ntValue = (wcValue / wcToNtRateWC) * wcToNtRateNT;
+        } else if (inputNT.value !== '') {
+            ntValue = parseFloat(inputNT.value);
+            wcValue = (ntValue / wcToNtRateNT) * wcToNtRateWC;
+            snowflakeValue = (wcValue / wcToSnowflakeRateWC) * wcToSnowflakeRateSnowflake;
+            mapleValue = (snowflakeValue / snowflakeToMapleRateSnowflake) * snowflakeToMapleRateMaple;
         }
 
-        // 從WC計算
-        function calculateFromWc() {
-            const wcAmount = parseFloat(document.getElementById('wcInput').value);
-            if (isNaN(wcAmount) || wcAmount <= 0) {
-                alert('請輸入有效的WC數量');
-                return;
-            }
+        // Apply thousand separators and fix to 2 decimal places for non-Maple values
+        outputWC.value = isNaN(wcValue) ? '' : wcValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        // Maple values typically don't have decimals, just thousand separators
+        outputMaple.value = isNaN(mapleValue) ? '' : Math.round(mapleValue).toLocaleString('en-US');
+        outputSnowflake.value = isNaN(snowflakeValue) ? '' : snowflakeValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        outputNT.value = isNaN(ntValue) ? '' : ntValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
-            const mesoAmount = wcAmount * rates.wcToMeso;
-            const ntAmount = wcAmount * rates.wcToNt;
+    wcToNtWCInput.addEventListener('input', updateConversion);
+    wcToNtNTInput.addEventListener('input', updateConversion);
+    wcToSnowflakeWCInput.addEventListener('input', updateConversion);
+    wcToSnowflakeSnowflakeInput.addEventListener('input', updateConversion);
+    snowflakeToMapleSnowflakeInput.addEventListener('input', updateConversion);
+    snowflakeToMapleMapleInput.addEventListener('input', updateConversion);
 
-            document.getElementById('wcToMesoResult').textContent = mesoAmount.toLocaleString();
-            document.getElementById('wcToNtResult').textContent = ntAmount.toFixed(2);
-            document.getElementById('wcResult').style.display = 'block';
+    inputWC.addEventListener('input', () => {
+        if (inputWC.value !== '') {
+            inputMaple.value = '';
+            inputSnowflake.value = '';
+            inputNT.value = '';
         }
-
-        // 從楓幣計算
-        function calculateFromMeso() {
-            const mesoAmount = parseFloat(document.getElementById('mesoInput').value);
-            if (isNaN(mesoAmount) || mesoAmount <= 0) {
-                alert('請輸入有效的楓幣數量');
-                return;
-            }
-
-            const wcAmount = mesoAmount / rates.wcToMeso;
-            const ntAmount = mesoAmount * rates.mesoToNt;
-
-            document.getElementById('mesoToWcResult').textContent = wcAmount.toFixed(4);
-            document.getElementById('mesoToNtResult').textContent = ntAmount.toFixed(4);
-            document.getElementById('mesoResult').style.display = 'block';
+        updateConversion();
+    });
+    inputMaple.addEventListener('input', () => {
+        if (inputMaple.value !== '') {
+            inputWC.value = '';
+            inputSnowflake.value = '';
+            inputNT.value = '';
         }
-
-        // 從台幣計算
-        function calculateFromNt() {
-            const ntAmount = parseFloat(document.getElementById('ntInput').value);
-            if (isNaN(ntAmount) || ntAmount <= 0) {
-                alert('請輸入有效的台幣金額');
-                return;
-            }
-
-            const wcAmount = ntAmount / rates.wcToNt;
-            const mesoAmount = wcAmount * rates.wcToMeso;
-
-            document.getElementById('ntToWcResult').textContent = wcAmount.toFixed(4);
-            document.getElementById('ntToMesoResult').textContent = mesoAmount.toLocaleString();
-            document.getElementById('ntResult').style.display = 'block';
+        updateConversion();
+    });
+    inputSnowflake.addEventListener('input', () => {
+        if (inputSnowflake.value !== '') {
+            inputWC.value = '';
+            inputMaple.value = '';
+            inputNT.value = '';
         }
+        updateConversion();
+    });
+    inputNT.addEventListener('input', () => {
+        if (inputNT.value !== '') {
+            inputWC.value = '';
+            inputMaple.value = '';
+            inputSnowflake.value = '';
+        }
+        updateConversion();
+    });
 
-        // 頁面載入時初始化匯率
-        window.onload = function() {
-            updateRates();
-        };
-
-        // 監聽Enter鍵
-        document.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                const activeElement = document.activeElement;
-                if (activeElement.id === 'wcInput') {
-                    calculateFromWc();
-                } else if (activeElement.id === 'mesoInput') {
-                    calculateFromMeso();
-                } else if (activeElement.id === 'ntInput') {
-                    calculateFromNt();
-                }
-            }
-        });
-    </script>
+    updateConversion();
+</script>
 </body>
 </html>
